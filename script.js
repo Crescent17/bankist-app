@@ -67,7 +67,7 @@ const displayMovements = function(movements) {
     const operationType = movement > 0 ? 'deposit' : 'withdrawal';
     const html = `<div class='movements__row'>
           <div class='movements__type movements__type--${operationType}'>${index + 1} ${operationType}</div>
-          <div class='movements__value'>${movement}</div>
+          <div class='movements__value'>${movement}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
@@ -79,9 +79,19 @@ const calcAndDisplayBalance = arr => {
   const balance = arr.reduce((accumulator, value) => {
     return accumulator + value;
   });
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance}€`;
 };
 calcAndDisplayBalance(account1.movements);
+
+const calcDisplaySummary = movements => {
+  const incomes = movements.filter(mov => mov > 0).reduce((acc, val) => acc + val);
+  labelSumIn.textContent = `${incomes}€`;
+  const out = movements.filter(move => move < 0).reduce((acc, val) => acc + val);
+  labelSumOut.textContent = `${Math.abs(out)}€`;
+  const interest = movements.filter(mov => mov > 0).map(deposit => deposit * .012).filter(int => int > 1).reduce((acc, int) => acc + int)
+  labelSumInterest.textContent = `${interest}€`;
+};
+calcDisplaySummary(account1.movements);
 
 const createUsernames = accs => accs.forEach(acc => {
   acc.username = acc.owner.toLowerCase().split(' ').map(name => name[0]).join('');
