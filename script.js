@@ -73,11 +73,17 @@ const displayMovements = function(movements) {
   });
 
 };
-
-
 displayMovements(account1.movements);
-const createUsername = accs => accs.forEach(acc => {
-  acc.username = acc.owner.toLowerCase().split(' ').map(name => name[0]).join('')
-})
-createUsername(accounts);
-console.log(accounts);
+
+const calcAndDisplayBalance = arr => {
+  const balance = arr.reduce((accumulator, value) => {
+    return accumulator + value;
+  });
+  labelBalance.textContent = `${balance} EUR`;
+};
+calcAndDisplayBalance(account1.movements);
+
+const createUsernames = accs => accs.forEach(acc => {
+  acc.username = acc.owner.toLowerCase().split(' ').map(name => name[0]).join('');
+});
+createUsernames(accounts);
