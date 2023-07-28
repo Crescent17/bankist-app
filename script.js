@@ -66,6 +66,12 @@ const createUsernames = accs => accs.forEach(acc => {
 });
 createUsernames(accounts);
 
+const updateUI = acc => {
+  displayMovements(acc.movements);
+  calcDisplaySummary(acc);
+  calcAndDisplayBalance(acc);
+};
+
 let currentAccount;
 btnLogin.addEventListener('click', (e) => {
   e.preventDefault();
@@ -73,9 +79,7 @@ btnLogin.addEventListener('click', (e) => {
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     containerApp.style.opacity = 1;
     labelWelcome.textContent = `Welcome back ${currentAccount.owner.split(' ')[0]}`;
-    displayMovements(currentAccount.movements);
-    calcAndDisplayBalance(currentAccount.movements);
-    calcDisplaySummary(currentAccount);
+    updateUI(currentAccount);
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginUsername.blur();
     inputLoginPin.blur();
@@ -94,11 +98,11 @@ const displayMovements = function(movements) {
   });
 };
 
-const calcAndDisplayBalance = arr => {
-  const balance = arr.reduce((accumulator, value) => {
+const calcAndDisplayBalance = acc => {
+  acc.balance = acc.movements.reduce((accumulator, value) => {
     return accumulator + value;
   });
-  labelBalance.textContent = `${balance}€`;
+  labelBalance.textContent = `${acc.balance}€`;
 };
 
 const calcDisplaySummary = acc => {
@@ -110,4 +114,19 @@ const calcDisplaySummary = acc => {
   labelSumInterest.textContent = `${interest}€`;
 };
 
-
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
+  inputTransferAmount.value = inputTransferTo.value = '';
+  inputTransferAmount.blur();
+  inputTransferTo.blur();
+  if (amount > 0 &&
+    receiverAcc &&
+    amount <= currentAccount.balance &&
+    receiverAcc?.username !== currentAccount.username) {
+    receiverAcc.movements.push(amount);
+    currentAccount.movements.push(-amount);
+    updateUI(currentAccount);
+  }
+});
